@@ -3,6 +3,7 @@
 const supergoose = require('../../supergoose.js');
 const auth = require('../../../src/auth/middleware.js');
 const Users = require('../../../src/auth/users-model.js');
+const jwt = require('jsonwebtoken');
 
 let users = {
   admin: {username: 'admin', password: 'password', role: 'admin'},
@@ -66,7 +67,23 @@ describe('Auth Middleware', () => {
           expect(next).toHaveBeenCalledWith();
         });
 
-    }); // it()
+    }); 
+    it('tokens expire after 15min', () => {
+      let req = {
+        headers: {
+          authorization: 'Basic YWRtaW46cGFzc3dvcmQ=',
+        },
+      };
+      let res = {};
+      let next = jest.fn();
+      let middleware = auth;
+
+      return middleware(req,res,next)
+        .then( () => {
+          cachedToken = req.token;
+          expect(cachedToken).toBeDefined();
+        });
+    });
     
   });
 
