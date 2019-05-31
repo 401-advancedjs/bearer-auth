@@ -56,7 +56,14 @@ users.methods.generateToken = function() {
     id: this._id,
     role: this.role,
   };
-  return jwt.sign(token, process.env.SECRET);
+  const tokenOption = {expiresIn: '15m'};
+  return jwt.sign(token, process.env.SECRET, tokenOption);
+};
+
+users.statics.authenticateToken = function(token){
+  const decryptedToken = jwt.verify(token, process.env.SECRET);
+  const query = {_id: decryptedToken.id};
+  return this.findOne(query);
 };
 
 module.exports = mongoose.model('users', users);

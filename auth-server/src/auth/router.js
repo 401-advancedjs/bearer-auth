@@ -32,4 +32,8 @@ authRouter.get('/oauth', (req,res,next) => {
     .catch(next);
 });
 
+authRouter.get('/protected-route', auth, (req, res, next) => {
+  res.status(200).send();
+});
+
 module.exports = authRouter;
