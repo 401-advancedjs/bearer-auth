@@ -56,12 +56,13 @@ users.methods.generateToken = function() {
     id: this._id,
     role: this.role,
   };
-  const tokenOption = {expiresIn: '15m'};
+  const tokenOption = {expiresIn: process.env.EXPIRESIN};
   return jwt.sign(token, process.env.SECRET, tokenOption);
 };
 
 users.statics.authenticateToken = function(token){
   const decryptedToken = jwt.verify(token, process.env.SECRET);
+  console.log(decryptedToken);
   const query = {_id: decryptedToken.id};
   return this.findOne(query);
 };

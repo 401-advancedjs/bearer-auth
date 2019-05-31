@@ -44,6 +44,7 @@ module.exports = (req, res, next) => {
 
   function _authenticate(user) {
     if ( user ) {
+      console.log(user);
       req.user = user;
       req.token = user.generateToken();
       next();
