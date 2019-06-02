@@ -6,7 +6,7 @@
 ### Author: Melissa Stock
 
 ### Links and Resources
-* [submission PR](https://github.com/401-advancedjs/bearer-auth/pull/1)
+* [submission PR](https://github.com/401-advancedjs/bearer-auth/pull/2)
 * [travis](https://www.travis-ci.com/)
 
 #### Documentation
