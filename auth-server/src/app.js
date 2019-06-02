@@ -9,6 +9,7 @@ const morgan = require('morgan');
 const errorHandler = require( './middleware/error.js');
 const notFound = require( './middleware/404.js' );
 const authRouter = require( './auth/router.js' );
+const aclRouter = require('./auth/acl-router.js');
 
 // Prepare the express app
 const app = express();
@@ -22,6 +23,7 @@ app.use(express.urlencoded({extended:true}));
 
 // Routes
 app.use(authRouter);
+app.use(aclRouter);
 
 // Catchalls
 app.use(notFound);
