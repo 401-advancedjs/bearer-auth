@@ -4,6 +4,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const TOKEN_LIFETIME = process.env.EXPIRESIN || '1m';
+const SINGLE_USE_TOKEN = !!process.env.SINGLE_USE_TOKEN;
+const SECRET = process.env.SECRET || 'changeIt';
+const disabledTokens = new Set();
+
 const users = new mongoose.Schema({
   username: {type:String, required:true, unique:true},
   password: {type:String, required:true},
@@ -51,12 +56,37 @@ users.statics.createFromOauth = function(email) {
 
 };
 
-users.methods.generateToken = function() {
+users.methods.generateToken = function(type) {
   let token = {
     id: this._id,
     role: this.role,
+    type: type || 'user',
   };
-  return jwt.sign(token, process.env.SECRET);
+  const tokenOption = {};
+  if(type !== 'key' && !!TOKEN_LIFETIME){
+    tokenOption.expiresIn = TOKEN_LIFETIME;
+  }
+  return jwt.sign(token, SECRET, tokenOption);
+};
+
+users.statics.authenticateToken = function(token){
+  if(disabledTokens.has(token)){
+    return Promise.reject('Invalid Token');
+  }
+  try{
+    const decryptedToken = jwt.verify(token, SECRET);
+    if(SINGLE_USE_TOKEN && decryptedToken.type != 'key'){
+      disabledTokens.add(token);
+    }
+    const query = {_id: decryptedToken.id};
+    return this.findOne(query);
+  }catch(error){
+    throw new Error('Invalid Token');
+  }
+};
+
+users.methods.generateKey = function(){
+  return this.generateToken('key');
 };
 
 module.exports = mongoose.model('users', users);
