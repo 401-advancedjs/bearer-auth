@@ -3,8 +3,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('./role-model.js');
 
-const TOKEN_LIFETIME = process.env.EXPIRESIN || '1m';
+const TOKEN_LIFETIME = process.env.EXPIRESIN || '30m';
 const SINGLE_USE_TOKEN = !!process.env.SINGLE_USE_TOKEN;
 const SECRET = process.env.SECRET || 'changeIt';
 const disabledTokens = new Set();
@@ -15,6 +16,18 @@ const users = new mongoose.Schema({
   email: {type: String},
   role: {type: String, default:'user', enum: ['admin','editor','user']},
 });
+
+users.virtual('roleSchema', {
+  ref: 'roleSchema',
+  localField: 'role',
+  foreignField: 'capabilites',
+});
+
+const capabilities = {
+  admin: ['create', 'read', 'update', 'delete'],
+  editor: ['create', 'read', 'update'],
+  user: ['read'],
+};
 
 users.pre('save', function(next) {
   bcrypt.hash(this.password, 10)
@@ -59,7 +72,7 @@ users.statics.createFromOauth = function(email) {
 users.methods.generateToken = function(type) {
   let token = {
     id: this._id,
-    role: this.role,
+    capabilities: capabilities[this.role],
     type: type || 'user',
   };
   const tokenOption = {};
@@ -87,6 +100,10 @@ users.statics.authenticateToken = function(token){
 
 users.methods.generateKey = function(){
   return this.generateToken('key');
+};
+
+users.methods.can = function(capability){
+  return capabilities[this.role].includes(capability);
 };
 
 module.exports = mongoose.model('users', users);

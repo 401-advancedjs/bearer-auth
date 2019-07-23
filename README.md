@@ -6,7 +6,7 @@
 ### Author: Melissa Stock
 
 ### Links and Resources
-* [submission PR](https://github.com/401-advancedjs/bearer-auth/pull/1)
+* [submission PR](https://github.com/401-advancedjs/bearer-auth/pull/2)
 * [travis](https://www.travis-ci.com/)
 
 #### Documentation
@@ -15,7 +15,9 @@
 ### Modules
 #### `middleware.js`
 #### `router.js`
+#### `acl-router.js`
 #### `users-model.js`
+#### `role-model.js`
 #### `404.js`
 #### `error.js`
 #### `app.js`
@@ -40,6 +42,22 @@
   * Returns a JSON object with user data in it.
 * Endpoint: `/key`
   Return a JSON object with user data in it.
+* Endpoint: `/public-stuff`
+  Return a string 'from public stuff'.
+* Endpoint: `/hidden-stuff`
+  Return a string 'from hidden stuff'.
+* Endpoint: `/something-to-read`
+  Return a string 'from something to read'.
+* Endpoint: `/create-a-thing`
+  Return a string 'from create a thing'.
+* Endpoint: `/update`
+  Return a string 'from update'.
+* Endpoint: `/jp`
+  Return a string 'from jp'.
+* Endpoint: `/bye-bye`
+  Return a string 'from bye bye'.
+* Endpoint: `/everything`
+  Return a string 'from everything'.
   
 #### Tests
 * How do you run tests? `npm run test`
@@ -50,8 +68,9 @@
   * tokens expire in 15min
   * Auth Keys do not expire
   * Auth keys can login a user as a token would
-* What assertions need to be / should be made?
   * single use tokens are not regenerated
+  * auth middleware grants access to create/delete/read/update to the authorized users
+* What assertions need to be / should be made?
 
 #### UML
 ![authorization uml](./auth-server/assets/uml.jpg)
